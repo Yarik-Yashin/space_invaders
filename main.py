@@ -19,40 +19,6 @@ def load_image(name, size, colorkey=None):
     return image
 
 
-class Object:
-    def render(self, img):
-        pass
-
-
-class Player:
-    def __init__(self):
-        self.lives = 4
-        self.score = 0
-        self.position = 50
-
-    def move(self, left: bool):
-        if left:
-            self.position = self.position - 5
-        else:
-            self.position = self.position + 5
-        return self.position
-
-
-class Bullet:
-    def __init__(self, x: int, y: int):
-        self.x = x
-        self.y = y
-
-    def check(self, enemy_x: int, enemy_y: int):
-        if self.x == enemy_x and self.y == enemy_y:
-            return 1
-        else:
-            return 0
-
-    def move(self, down: bool):
-        self.y = self.y - 10 if down else self.y + 10
-
-
 class Enemy(pygame.sprite.Sprite):
     image = load_image("enemy.png", (30, 30))
     image2 = load_image("enemy1.png", (30, 30))
@@ -86,10 +52,12 @@ class Enemy(pygame.sprite.Sprite):
         if pygame.sprite.spritecollideany(self, hero_bullets_sprites):
             self.kill()
             pygame.sprite.spritecollideany(self, hero_bullets_sprites).kill()
+        if random.randint(0, 1200) == 5:
+            EnemyBullet(enemy_bullets_sprites, self.rect.x, self.rect.y)
 
 
 class Hero(pygame.sprite.Sprite):
-    image = load_image("hero.png", (50, 50))
+    image = load_image("hero.png", (60, 60))
 
     def __init__(self, group, x, y):
         super().__init__(group)
@@ -97,29 +65,37 @@ class Hero(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.health = 4
 
     def update(self, *args, n):
         self.rect = self.rect.move(n, 0)
+        if pygame.sprite.spritecollideany(self, enemy_bullets_sprites):
+            self.health -= 1
+            self.rect.x = 300
+            self.rect.y = 520
 
 
 class HeroBullet(pygame.sprite.Sprite):
-    image = load_image("bullet1.png", (50, 50))
+    image = load_image("bullet1.png", (5, 25))
 
     def __init__(self, group, x, y):
         super().__init__(group)
         self.image = HeroBullet.image
         self.rect = self.image.get_rect()
-        self.rect.x = x
+        self.rect.x = x + 25
         self.rect.y = y
 
     def update(self, *args):
         self.rect = self.rect.move(0, -20)
-        '''if pygame.sprite.spritecollideany(self, enemy_sprites):
-            self.kill()'''
+
+
+class EnemyBullet(HeroBullet):
+    def update(self, *args):
+        self.rect = self.rect.move(0, 20)
 
 
 class Building(pygame.sprite.Sprite):
-    image = load_image("building.png", (50, 50))
+    image = load_image("building0.png", (50, 50))
 
     def __init__(self, group, x, y):
         super().__init__(group)
@@ -127,19 +103,29 @@ class Building(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.health = 0
+
+    def update(self, *args):
+        if pygame.sprite.spritecollideany(self, hero_bullets_sprites or enemy_bullets_sprites):
+            self.health += 1
+            if self.health == 6:
+                self.kill()
+            else:
+                pygame.sprite.spritecollideany(self, hero_bullets_sprites or enemy_bullets_sprites).kill()
+                self.image = load_image("building" + str(self.health) + ".png", (50, 50))
 
 
 if __name__ == '__main__':
 
     W = 600
     H = 600
-
+    pygame.init()
     screen = pygame.display.set_mode((W, H))
     pygame.display.update()
-    fps = 24
     clock = pygame.time.Clock()
     hero_bullets_sprites = pygame.sprite.Group()
     enemy_sprites = pygame.sprite.Group()
+    enemy_bullets_sprites = pygame.sprite.Group()
     hero_sprite = pygame.sprite.Group()
     hero = Hero(hero_sprite, 300, 520)
     buildings_sprites = pygame.sprite.Group()
@@ -148,6 +134,7 @@ if __name__ == '__main__':
     for i in range(10):
         for j in range(6):
             Enemy(enemy_sprites, 41 * i, 41 * j)
+    fps = 24
     while True:
         for i in pygame.event.get():
             if i.type == pygame.QUIT:
@@ -158,7 +145,7 @@ if __name__ == '__main__':
                     hero_sprite.update(n=10)
                 if i.key == pygame.K_LEFT:
                     hero_sprite.update(n=-10)
-                if i.key == pygame.K_SPACE:
+                if i.key == pygame.K_SPACE and len(hero_bullets_sprites) < 1:
                     HeroBullet(hero_bullets_sprites, hero.rect.x, hero.rect.y)
         screen.fill((0, 0, 0))
         hero_sprite.draw(screen)
@@ -166,6 +153,16 @@ if __name__ == '__main__':
         hero_bullets_sprites.update()
         enemy_sprites.draw(screen)
         enemy_sprites.update()
+        enemy_bullets_sprites.draw(screen)
+        enemy_bullets_sprites.update()
         buildings_sprites.draw(screen)
+        buildings_sprites.update()
+        hero_sprite.update(n=0)
+        font = pygame.font.Font(None, 25)
+        text = font.render(f"Your lives:{hero.health - 1}", True, (100, 255, 100))
+
+        screen.blit(text, (10, 520))
         pygame.display.update()
+        fps = 1440 / len(enemy_sprites)
+
         clock.tick(fps)
