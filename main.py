@@ -165,6 +165,8 @@ class Enemy(pygame.sprite.Sprite):
         self.o += n
         if pygame.sprite.spritecollideany(self, hero_bullets_sprites):
             self.kill()
+            pygame.mixer.music.load('audio/pau.mp3')
+            pygame.mixer.music.play()
             pygame.sprite.spritecollideany(self, hero_bullets_sprites).kill()
             Bang(bang_sprites, self.rect.x, self.rect.y)
         if random.randint(0, 2400 / sl) == 5:
@@ -195,6 +197,8 @@ class HeroBullet(pygame.sprite.Sprite):
 
     def __init__(self, group, x, y):
         super().__init__(group)
+        pygame.mixer.music.load('audio/piu.mp3')
+        pygame.mixer.music.play()
         self.image = HeroBullet.image
         self.rect = self.image.get_rect()
         self.rect.x = x + 20
@@ -244,22 +248,28 @@ class Building(pygame.sprite.Sprite):
 
     def update(self, *args):
         if pygame.sprite.spritecollideany(self, enemy_sprites):
+            pygame.mixer.music.load('audio/babah.mp3')
+            pygame.mixer.music.play()
             pygame.sprite.spritecollideany(self, enemy_sprites).kill()
             self.kill()
         if pygame.sprite.spritecollideany(self, hero_bullets_sprites or enemy_bullets_sprites):
             self.health += 1
             if self.health == 6:
                 self.kill()
+                pygame.mixer.music.load('audio/babah.mp3')
+                pygame.mixer.music.play()
             else:
                 pygame.sprite.spritecollideany(self, hero_bullets_sprites or enemy_bullets_sprites).kill()
                 self.image = load_image("building" + str(self.health) + ".png", (50, 50))
+                pygame.mixer.music.load('audio/babah.mp3')
+                pygame.mixer.music.play()
 
 
 if __name__ == '__main__':
     W = 600
     H = 600
     pygame.init()
-
+    pygame.mixer.init()
     screen = pygame.display.set_mode((W, H))
 
     clock = pygame.time.Clock()
