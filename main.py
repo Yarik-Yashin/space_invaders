@@ -256,7 +256,7 @@ class Building(pygame.sprite.Sprite):
             self.kill()
         if pygame.sprite.spritecollideany(self, hero_bullets_sprites or enemy_bullets_sprites):
             self.health += 1
-            if self.health == 6:
+            if self.health == 5:
                 self.kill()
                 pygame.mixer.music.load('audio/babah.mp3')
                 pygame.mixer.music.play()
