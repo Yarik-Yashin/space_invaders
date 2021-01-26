@@ -61,17 +61,12 @@ def end_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 a = 0
-
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
         pygame.display.flip()
         clock.tick(60)
 
 
 def new_game(slozn):
     global sl
-    print(sl)
     hero = Hero(hero_sprite, 300, 520)
     for i in range(4):
         Building(buildings_sprites, 150 * i + 20, 460)
@@ -108,19 +103,15 @@ def new_game(slozn):
         screen.blit(text, (10, 520))
         screen.blit(text1, (10, 560))
         if len(enemy_sprites) == 0:
-            print(1)
             return
         if len(buildings_sprites) == 0 or hero.health < 0:
             sl = 0 - sl
-            print(1)
             return
         for i in enemy_sprites:
-            if i.rect.y < 0:
+            if i.rect.y > 600:
                 sl = 0 - sl
-                print(1)
                 return
         pygame.display.update()
-        print(len(buildings_sprites))
         fps = 720 / (len(enemy_sprites) + 1)
 
         clock.tick(fps)
@@ -286,7 +277,6 @@ if __name__ == '__main__':
 
     sl = 1
     while sl != 0:
-        print(sl)
         new_game(sl)
         sl += 1
         hero_bullets_sprites.empty()
