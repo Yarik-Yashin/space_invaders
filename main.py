@@ -135,10 +135,8 @@ def load_image(name, size, colorkey=None):
 class Enemy(pygame.sprite.Sprite):
     image = load_image("enemy.png", (30, 30))
     image2 = load_image("enemy1.png", (30, 30))
-    images = [image, image2]
 
     def __init__(self, group, x, y):
-
         super().__init__(group)
         self.image = Enemy.image
         self.rect = self.image.get_rect()
@@ -264,7 +262,6 @@ if __name__ == '__main__':
 
     screen = pygame.display.set_mode((W, H))
 
-    pygame.display.update()
     clock = pygame.time.Clock()
     start_screen()
     hero_bullets_sprites = pygame.sprite.Group()
