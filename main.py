@@ -47,6 +47,8 @@ def end_screen():
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
+    pygame.mixer.music.load('audio/end.mp3')
+    pygame.mixer.music.play()
     for line in intro_text:
         string_rendered = font.render(line, 1, pygame.Color('black'))
         intro_rect = string_rendered.get_rect()
