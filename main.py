@@ -104,7 +104,7 @@ def new_game(slozn):
         screen.blit(text1, (10, 560))
         if len(enemy_sprites) == 0:
             return
-        if len(buildings_sprites) == 0 or hero.health < 0:
+        if len(buildings_sprites) == 0 or hero.health <= 0:
             sl = 0 - sl
             return
         for i in enemy_sprites:
@@ -199,7 +199,7 @@ class HeroBullet(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = HeroBullet.image
         self.rect = self.image.get_rect()
-        self.rect.x = x + 25
+        self.rect.x = x + 20
         self.rect.y = y
 
     def update(self, *args):
